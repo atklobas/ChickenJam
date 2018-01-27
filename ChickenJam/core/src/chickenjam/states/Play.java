@@ -83,17 +83,54 @@ public class Play extends GameState {
 	
 	public void handleInput() {
 		
-		// player jump
-		if(MyInput.isPressed(MyInput.BUTTON1)) {
+		
+		//if(cd.isPlayerOnGround()) {
+			player.onGround(cl.isPlayerOnGround());
+		//}
+		
+		
+		if(MyInput.isDown(MyInput.RIGHT)) {
+			player.moveRight();
+			/*System.out.println("here");
 			if(cl.isPlayerOnGround()) {
-				player.getBody().applyForceToCenter(0, 250, true);
-			}
+				player.getBody().setLinearVelocity(1,player.getBody().getLinearVelocity().y);
+				//player.getBody().applyForceToCenter(10, 0, true);
+			}*/
+		}else if(MyInput.isDown(MyInput.LEFT)) {
+			player.moveLeft();
+			
+			//if(cl.isPlayerOnGround()) {
+			/*	//player.getBody().setL
+				player.getBody().setLinearVelocity(-1,player.getBody().getLinearVelocity().y);
+				//player.getBody().applyForceToCenter(-10, 0, true);
+				//player.getBody().applyForceToCenter(0, 250, true);
+			}*/
+		}else {
+			player.stop();
 		}
 		
-		// switch block color
+		if(MyInput.isPressed(MyInput.UP)) {
+			player.jump();
+/*			if(cl.isPlayerOnGround()) {
+				player.getBody().applyForceToCenter(player.getBody().getLinearVelocity().x, 250, true);
+			}*/
+		}
+/*MyInput.isDown(MyInput.LEFT)&&!MyInput.isDown(MyInput.RIGHT)&&cl.isPlayerOnGround()) {
+			System.out.println("here2");
+			player.getBody().setLinearVelocity(0,player.getBody().getLinearVelocity().y);
+		}
+	*/	
+		
+		
+		
+		
+				//player.getBody().applyForceToCenter(0, 250, true);
+			
+		
+	/*	// switch block color
 		if(MyInput.isPressed(MyInput.BUTTON2)) {
 			switchBlocks();
-		}
+		}*/
 		
 	}
 	
@@ -171,7 +208,6 @@ public class Play extends GameState {
 		// create player
 		bdef.position.set(100 / PPM, 200 / PPM);
 		bdef.type = BodyType.DynamicBody;
-		bdef.linearVelocity.set(1f, 0);
 		Body body = world.createBody(bdef);
 		
 		shape.setAsBox(13 / PPM, 13 / PPM);
@@ -190,6 +226,7 @@ public class Play extends GameState {
 		
 		// create player
 		player = new Player(body);
+		
 		
 		body.setUserData(player);
 		
