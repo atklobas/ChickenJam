@@ -47,11 +47,13 @@ public class Sprite {
 	public Sprite() {
 		animation = new Animation();
 	}
-	
+	boolean visible=true;
 	public Sprite(float x, float y, float width, float height) {
+		///visible=false;
 		animation = new Animation();
-		Texture tex = Game.res.getTexture("bunny");
-		TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+		Texture tex = Game.res.getTexture("crystal");
+		TextureRegion[] sprites = TextureRegion.split(tex, 16, 16)[0];
+		
 		setAnimation(sprites, 1 / 12f);
 		this.x=(int)x;
 		this.y=(int)y;
@@ -70,6 +72,7 @@ public class Sprite {
 	}
 	
 	public void render(SpriteBatch sb) {//System.out.println(x+","+y+","+width+","+height);
+		if(!visible)return;
 		sb.begin();
 		sb.draw(
 			animation.getFrame(),

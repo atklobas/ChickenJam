@@ -2,6 +2,8 @@ package chickenjam.states;
 
 import static chickenjam.handlers.B2DVars.PPM;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -126,11 +128,21 @@ public class Play extends GameState {
 		}
 		
 		if (MyInput.isPressed(MyInput.CROW)) {
-			for(Sprite win:this.winZones) {
+			for(Sprite s:winZones) {
+				System.out.println(s);
+			}
+			Iterator<Sprite> itr=winZones.iterator();
+			for(Sprite win=itr.next();itr.hasNext();win=itr.next()) {
+				System.out.println(win);
+				if(win==null)continue;
 				Vector2 p=player.getPosition().scl(PPM);
 				if(p.x>win.getX()&&p.x<win.getX()+win.getWidth()){
 					if(p.y>win.getY()&&p.y<win.getY()+win.getHeight()) {
-						player.win();
+						itr.remove();
+						
+						if(winZones.size==1) {
+							player.win();
+						}
 					}
 					
 				
@@ -152,7 +164,7 @@ public class Play extends GameState {
 		
 	}
 	public void update(float dt) {
-		time+=dt/15;
+		time+=dt/5f;
 		
 		// check input
 		handleInput();
@@ -215,7 +227,7 @@ public class Play extends GameState {
 			gsm.pushState(GameStateManager.TIMEOUT);
 			
 		}selection*=3;
-		System.out.println(selection+","+mid);
+		//System.out.println(selection+","+mid);
 		float r= colors[selection]*(1-mid)+colors[selection+3]*mid;
 		
 		float g= colors[selection+1]*(1-mid)+colors[selection+1+3]*mid;
@@ -280,7 +292,7 @@ public class Play extends GameState {
 		PolygonShape shape = new PolygonShape();
 		
 		// create player
-		bdef.position.set(100 / PPM, 200 / PPM);
+		bdef.position.set(100 / PPM, 500 / PPM);
 		bdef.type = BodyType.DynamicBody;
 		Body body = world.createBody(bdef);
 		
@@ -311,7 +323,7 @@ public class Play extends GameState {
 	private void createTiles() {
 		
 		// load tile map
-		tileMap = new TmxMapLoader().load("res/maps/test03nowwithboxes.tmx");
+		tileMap = new TmxMapLoader().load("res/maps/test04.tmx");
 		//tileMap = new TmxMapLoader().load("res/maps/test.tmx");
 		tmr = new OrthogonalTiledMapRenderer(tileMap,1/4f);
 			
@@ -394,10 +406,10 @@ public class Play extends GameState {
 		//Boxes
 				layer=tileMap.getLayers().get("objective");
 				for(MapObject o:layer.getObjects()) {
-					float x=(float)o.getProperties().get("x");
-					float y=(float)o.getProperties().get("y");
-					float width=(float)o.getProperties().get("width");
-					float height=(float)o.getProperties().get("height");
+					float x=(float)o.getProperties().get("x")/4f;
+					float y=(float)o.getProperties().get("y")/4f;
+					float width=(float)o.getProperties().get("width")/4f;
+					float height=(float)o.getProperties().get("height")/4f;
 					
 					this.winZones.add(new Sprite(x,y,width,height));
 					
@@ -414,8 +426,9 @@ public class Play extends GameState {
 		//Enemies
 		layer=tileMap.getLayers().get("enemies");
 		for(MapObject o:layer.getObjects()) {
-			float x=(float)o.getProperties().get("x")/PPM;
-			float y=(float)o.getProperties().get("y")/PPM;
+			
+			float x=(float)o.getProperties().get("x")/PPM/4f;
+			float y=(float)o.getProperties().get("y")/PPM/4f;
 			String type=(String) o.getProperties().get("type");
 			bdef.position.set(x, y);
 			
