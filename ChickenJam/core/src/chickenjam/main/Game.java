@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import chickenjam.entities.GameOver;
+import chickenjam.entities.Player;
 import chickenjam.handlers.Content;
 import chickenjam.handlers.GameStateManager;
 import chickenjam.handlers.MyInput;
@@ -36,6 +38,7 @@ public class Game implements ApplicationListener {
 		
 		res = new Content();
 		res.loadTexture("res/images/bunny.png", "bunny");
+		res.loadTexture("res/images/Rooster_movement.png", "rooster");
 		res.loadTexture("res/images/crystal.png", "crystal");
 		res.loadTexture("res/images/hud.png", "hud");
 		
@@ -59,6 +62,10 @@ public class Game implements ApplicationListener {
 		}
 		gsm.render();
 		
+	}
+	
+	public void gameOver() {
+//		GameOver.class.GameOver(this);
 	}
 	
 	public void dispose() {

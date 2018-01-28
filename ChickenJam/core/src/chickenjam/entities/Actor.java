@@ -13,6 +13,7 @@ public class Actor extends B2DSprite {
 	protected float gndForce=3;
 	protected float airForce=2;
 	protected float fallDamping=.93f;
+	protected boolean canMove = true;
 	
 	public Actor(Body body) {
 		super(body);
@@ -21,53 +22,56 @@ public class Actor extends B2DSprite {
 
 
 public void moveLeft() {
-	goingRight=false;
-	if(onGround) {
-		if(body.getLinearVelocity().x<-maxSpeed) {
-			body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
-		}else if(body.getLinearVelocity().x>0){
-			stop();
+	if (canMove) {
+		goingRight=false;
+		if(onGround) {
+			if(body.getLinearVelocity().x<-maxSpeed) {
+				body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x>0){
+				stop();
+			}else {
+				body.applyForceToCenter(-gndForce, 0,true);
+			}
 		}else {
-			body.applyForceToCenter(-gndForce, 0,true);
-		}
-	}else {
-		if(body.getLinearVelocity().x<-maxSpeed) {
-			body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
-		}else if(body.getLinearVelocity().x>0){
-			body.applyForceToCenter(-airForce*2, 0,true);
-		}else {
-			
-			body.applyForceToCenter(-airForce, 0,true);
+			if(body.getLinearVelocity().x<-maxSpeed) {
+				body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x>0){
+				body.applyForceToCenter(-airForce*2, 0,true);
+			}else {
+				
+				body.applyForceToCenter(-airForce, 0,true);
+			}
 		}
 	}
 }
 public void moveRight() {
-
-	goingRight=true;
-
-	if(onGround) {
-		if(body.getLinearVelocity().x>maxSpeed) {
-			body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
-		}else if(body.getLinearVelocity().x<0){
-			stop();
+	if (canMove) {
+		goingRight=true;
+	
+		if(onGround) {
+			if(body.getLinearVelocity().x>maxSpeed) {
+				body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x<0){
+				stop();
+			}else {
+				body.applyForceToCenter(gndForce, 0,true);
+			}
 		}else {
-			body.applyForceToCenter(gndForce, 0,true);
-		}
-	}else {
-		if(body.getLinearVelocity().x>maxSpeed) {
-			body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
-		}else if(body.getLinearVelocity().x<0){
-			body.applyForceToCenter(gndForce*2, 0,true);
-		}else {
-			body.applyForceToCenter(gndForce, 0,true);
+			if(body.getLinearVelocity().x>maxSpeed) {
+				body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x<0){
+				body.applyForceToCenter(gndForce*2, 0,true);
+			}else {
+				body.applyForceToCenter(gndForce, 0,true);
+			}
 		}
 	}
-	
 }
 public void jump() {
-	
-	if(onGround) {
-		body.applyForceToCenter(body.getLinearVelocity().x, 150, true);
+	if (canMove) {
+		if(onGround) {
+			body.applyForceToCenter(body.getLinearVelocity().x, 150, true);
+		}
 	}
 }
 

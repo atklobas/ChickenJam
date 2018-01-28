@@ -13,11 +13,13 @@ import com.badlogic.gdx.physics.box2d.Filter;
 
 import chickenjam.handlers.B2DVars;
 import chickenjam.main.Game;
+import chickenjam.states.Play;
 
 public class Player extends Actor {
 	
 	private final short MAX_HEALTH = 6;
 	private short currentHealth;
+	private boolean dead = false;
 
 //	private short maxHealth;
 	private float invunerable=0;
@@ -27,9 +29,8 @@ public class Player extends Actor {
 	private float airForce=2;
 	private float fallDamping=.93f;
 	private Map<String, Sound> soundMap;
-	private boolean crowing = false;
 	private long lastCrowed=0;
-	
+	private long diedAt=0;
 	public Player(Body body) {
 		
 		super(body);
@@ -109,10 +110,27 @@ public class Player extends Actor {
 //		soundMap.put("distress", distress);
 	}
 	
-	public void loseHealth() { currentHealth--; }
-	public void gainHealth() { currentHealth++; }
+	public void loseHealth() { 
+		if (!(getHealth() <= 0)) {
+			currentHealth--;
+			if (getHealth() <= 0) {
+				dead = true;
+				
+				diedAt=System.currentTimeMillis();
+				System.out.println(diedAt);
+				death();
+			}
+		}
+	}
+	
+	public void gainHealth() {
+		if (!(getHealth() >= MAX_HEALTH)) {
+			currentHealth++;
+		}
+	}
+	
 	public short getHealth() { return currentHealth; }
-	public void setToMaxHealth() { currentHealth = 6; }
+	public void setToMaxHealth() { currentHealth = MAX_HEALTH; }
 	public short getMaxHealth() { return MAX_HEALTH; }
 
 
@@ -124,6 +142,7 @@ public class Player extends Actor {
 		if(playerAttacked&&invunerable<=0) {
 			this.loseHealth();
 			invunerable=1;
+			
 		}
 		
 	}
@@ -135,6 +154,26 @@ public class Player extends Actor {
 			lastCrowed=System.currentTimeMillis();
 			
 		}
+	}
+	
+	public boolean isDead() {
+		return dead;
+	}
+		
+	public void death() {
+		super.canMove = false;
+//		Texture tex = Game.res.getTexture("rooster_dead");
+//		TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+//		Play.class.music.stop();
+//		Deaggro enemies
+//		Wait a couple seconds
+//		call continue screen
+//		Game.this.gameOver();
+	}
+
+	public long diedAt() {
+		// TODO Auto-generated method stub
+		return diedAt;
 	}
 	
 }
