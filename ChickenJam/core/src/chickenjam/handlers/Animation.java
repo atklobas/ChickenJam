@@ -29,10 +29,13 @@ public class Animation {
 	}
 	
 	public void update(float dt) {
+		if(dt>0) {
 		if(delay <= 0) return;
 		time += dt;
 		while(time >= delay) {
 			step();
+		}}else {
+			currentFrame=0;
 		}
 	}
 	
