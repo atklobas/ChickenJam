@@ -15,15 +15,11 @@ public class MyInputProcessor extends InputAdapter {
 			break;
 		case Keys.D:MyInput.setKey(MyInput.RIGHT, true);
 			break;
+		case Keys.SPACE:MyInput.setKey(MyInput.CROW, true);
+			break;
 		default:;
 		}
 		
-		if(k == Keys.Z) {
-			MyInput.setKey(MyInput.LEFT, true);
-		}
-		if(k == Keys.X) {
-			MyInput.setKey(MyInput.RIGHT, true);
-		}
 		return true;
 	}
 	
@@ -37,13 +33,9 @@ public class MyInputProcessor extends InputAdapter {
 			break;
 		case Keys.D:MyInput.setKey(MyInput.RIGHT, false);
 			break;
+		case Keys.SPACE:MyInput.setKey(MyInput.CROW, false);
+			break;
 		default:;
-		}
-		if(k == Keys.Z) {
-			MyInput.setKey(MyInput.LEFT, false);
-		}
-		if(k == Keys.X) {
-			MyInput.setKey(MyInput.RIGHT, false);
 		}
 		return true;
 	}
