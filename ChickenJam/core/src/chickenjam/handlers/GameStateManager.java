@@ -3,6 +3,7 @@ package chickenjam.handlers;
 import java.util.Stack;
 
 import chickenjam.main.Game;
+import chickenjam.states.Death;
 import chickenjam.states.GameState;
 import chickenjam.states.Play;
 
@@ -13,6 +14,7 @@ public class GameStateManager {
 	private Stack<GameState> gameStates;
 	
 	public static final int PLAY = 912837;
+	public static final int DEAD=1;
 	
 	public GameStateManager(Game game) {
 		this.game = game;
@@ -32,6 +34,7 @@ public class GameStateManager {
 	
 	private GameState getState(int state) {
 		if(state == PLAY) return new Play(this);
+		if(state==DEAD)return new Death(this);
 		return null;
 	}
 	

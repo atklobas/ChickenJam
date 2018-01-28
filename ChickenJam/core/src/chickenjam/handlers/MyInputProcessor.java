@@ -17,6 +17,8 @@ public class MyInputProcessor extends InputAdapter {
 			break;
 		case Keys.SPACE:MyInput.setKey(MyInput.CROW, true);
 			break;
+		case Keys.ENTER:MyInput.setKey(MyInput.ENTER, true);
+			break;
 		default:;
 		}
 		
@@ -34,6 +36,8 @@ public class MyInputProcessor extends InputAdapter {
 		case Keys.D:MyInput.setKey(MyInput.RIGHT, false);
 			break;
 		case Keys.SPACE:MyInput.setKey(MyInput.CROW, false);
+			break;
+		case Keys.ENTER:MyInput.setKey(MyInput.ENTER, false);
 			break;
 		default:;
 		}

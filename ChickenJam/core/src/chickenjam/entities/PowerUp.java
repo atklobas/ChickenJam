@@ -6,12 +6,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 import chickenjam.main.Game;
 
-public class Crystal extends B2DSprite {
+public class PowerUp extends B2DSprite {
 	
-	public Crystal(Body body) {
+	public PowerUp(Body body) {
 		
 		super(body);
-		
+
 		Texture tex = Game.res.getTexture("crystal");
 		TextureRegion[] sprites = TextureRegion.split(tex, 16, 16)[0];
 		

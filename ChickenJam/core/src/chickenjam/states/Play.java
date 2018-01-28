@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.Array;
 
 import chickenjam.entities.Actor;
 import chickenjam.entities.B2DSprite;
-import chickenjam.entities.Crystal;
+import chickenjam.entities.PowerUp;
 import chickenjam.entities.Enemy;
 import chickenjam.entities.HUD;
 import chickenjam.entities.Player;
@@ -54,7 +54,7 @@ public class Play extends GameState {
 	private OrthogonalTiledMapRenderer tmr;
 	
 	public Player player;
-	private Array<Crystal> crystals;
+	private Array<PowerUp> crystals;
 	private Array<B2DSprite> objects;
 	
 	private HUD hud;
@@ -135,20 +135,28 @@ public class Play extends GameState {
 		}
 		
 	}
-	
 	public void update(float dt) {
 		
 		// check input
 		handleInput();
+		if(!player.isDead()) {
+			world.step(dt, 6, 2);
+		}else {
+			if(player.diedAt()+3000<System.currentTimeMillis()) {
+				gsm.popState();
+				
+				gsm.pushState(GameStateManager.DEAD);
+			}
+		}
 		
 		// update box2d
-		world.step(dt, 6, 2);
+		
 		
 		// remove crystals
 		Array<Body> bodies = cl.getBodiesToRemove();
 		for(int i = 0; i < bodies.size; i++) {
 			Body b = bodies.get(i);
-			crystals.removeValue((Crystal) b.getUserData(), true);
+			crystals.removeValue((PowerUp) b.getUserData(), true);
 			world.destroyBody(b);
 			player.gainHealth();
 		}
@@ -210,7 +218,9 @@ public class Play extends GameState {
 		
 	}
 	
-	public void dispose() {}
+	public void dispose() {
+		music.stop();
+	}
 	
 	private void createPlayer() {
 		
@@ -319,7 +329,7 @@ public class Play extends GameState {
 	
 	private void createCrystals() {
 		
-		crystals = new Array<Crystal>();
+		crystals = new Array<PowerUp>();
 		objects= new Array<B2DSprite>();
 		MapLayer layer = tileMap.getLayers().get("crystals");
 		
@@ -332,6 +342,7 @@ public class Play extends GameState {
 			float y=(float)o.getProperties().get("y")/PPM;
 			String type=(String) o.getProperties().get("type");
 			bdef.position.set(x, y);
+			
 			
 			bdef.type = BodyType.DynamicBody;
 			bdef.fixedRotation=true;
@@ -406,7 +417,7 @@ public class Play extends GameState {
 			Body body = world.createBody(bdef);
 			body.createFixture(fdef).setUserData("crystal");
 			
-			Crystal c = new Crystal(body);
+			PowerUp c = new PowerUp(body);
 			crystals.add(c);
 			
 			body.setUserData(c);
