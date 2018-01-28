@@ -17,14 +17,31 @@ public class MyContactListener implements ContactListener {
 		super();
 		bodiesToRemove = new Array<Body>();
 	}
+	boolean playerAttacked=false;
 	
 	// called when two fixtures start to collide
 	public void beginContact(Contact c) {
 		
 		Fixture fa = c.getFixtureA();
 		Fixture fb = c.getFixtureB();
-		
+		//System.out.println(c.getChildIndexA());
 		if(fa == null || fb == null) return;
+		
+		
+		boolean enemy=false;
+		boolean player=false;
+		if(fa.getUserData() != null && fa.getUserData().equals("enemy")) {
+			enemy=true;
+		}
+		if(fb.getUserData() != null && fb.getUserData().equals("enemy")) {
+			enemy=true;
+		}
+		if(fb.getUserData() != null && fb.getUserData().equals("player")) {
+			player=true;
+		}if(fa.getUserData() != null && fa.getUserData().equals("player")) {
+			player=true;
+		}
+		playerAttacked=enemy&&player;
 		
 		if(fa.getUserData() != null && fa.getUserData().equals("foot")) {
 			numFootContacts++;
@@ -58,7 +75,10 @@ public class MyContactListener implements ContactListener {
 		}
 		
 	}
-	
+	public boolean isPlayerAttacked() {
+		return this.playerAttacked;
+		
+	}
 	public boolean isPlayerOnGround() { return numFootContacts > 0; }
 	public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
 	

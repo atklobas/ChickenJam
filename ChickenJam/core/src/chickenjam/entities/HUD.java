@@ -27,7 +27,7 @@ public class HUD {
 	}
 	
 	public void render(SpriteBatch sb) {
-
+		
 		sb.begin();
 		for (short i = 0; i < player.getHealth() ; i += 2) {
 			sb.draw(blocks[0], 20 + (i / 2 * 20), 200);

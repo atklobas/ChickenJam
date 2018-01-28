@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="2018.01.23" orientation="orthogonal" renderorder="right-down" width="40" height="8" tilewidth="32" tileheight="32" infinite="0" nextobjectid="1">
+<map version="1.0" tiledversion="2018.01.23" orientation="orthogonal" renderorder="right-down" width="40" height="8" tilewidth="32" tileheight="32" infinite="0" nextobjectid="51">
  <tileset firstgid="1" name="blocks" tilewidth="32" tileheight="32" tilecount="3" columns="3">
   <image source="blocks.png" width="96" height="32"/>
  </tileset>
  <layer name="red" width="40" height="8">
   <data encoding="base64" compression="zlib">
-   eJxjZKAOYETC1ALUNo/agFL30SLMsJlPjh56hDsx9tDTPfjsxoYHGgwWd+AChMJvMGAAbKwASQ==
+   eJxjZKAuYKSyWdQ0j9pg1H2UAUY8eDCAweQWbGCouG8wYwBKQAA9
   </data>
  </layer>
  <layer name="green" width="40" height="8">
@@ -19,4 +19,14 @@
   </data>
  </layer>
  <objectgroup name="crystals"/>
+ <objectgroup name="boxes">
+  <object id="50" x="145" y="83">
+   <ellipse/>
+  </object>
+ </objectgroup>
+ <objectgroup name="enemies">
+  <object id="48" type="dog" x="270" y="176">
+   <ellipse/>
+  </object>
+ </objectgroup>
 </map>

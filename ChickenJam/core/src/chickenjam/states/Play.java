@@ -25,9 +25,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import chickenjam.entities.Actor;
+import chickenjam.entities.B2DSprite;
 import chickenjam.entities.Crystal;
+import chickenjam.entities.Enemy;
 import chickenjam.entities.HUD;
 import chickenjam.entities.Player;
+import chickenjam.entities.PushableObject;
 import chickenjam.handlers.B2DVars;
 import chickenjam.handlers.GameStateManager;
 import chickenjam.handlers.MyContactListener;
@@ -48,8 +52,9 @@ public class Play extends GameState {
 	private float tileSize;
 	private OrthogonalTiledMapRenderer tmr;
 	
-	private Player player;
+	public Player player;
 	private Array<Crystal> crystals;
+	private Array<B2DSprite> objects;
 	
 	private HUD hud;
 	
@@ -86,6 +91,7 @@ public class Play extends GameState {
 		
 		//if(cd.isPlayerOnGround()) {
 			player.onGround(cl.isPlayerOnGround());
+			player.attacked(cl.isPlayerAttacked());
 		//}
 		
 		
@@ -141,6 +147,9 @@ public class Play extends GameState {
 		for(int i = 0; i < crystals.size; i++) {
 			crystals.get(i).update(dt);
 		}
+		for(B2DSprite o:this.objects) {
+			o.update(dt);
+		}
 		
 	}
 	
@@ -164,7 +173,9 @@ public class Play extends GameState {
 		// draw player
 		sb.setProjectionMatrix(cam.combined);
 		player.render(sb);
-		
+		for(B2DSprite o:this.objects) {
+			o.render(sb);
+		}
 		// draw crystals
 		for(int i = 0; i < crystals.size; i++) {
 			crystals.get(i).render(sb);
@@ -204,6 +215,7 @@ public class Play extends GameState {
 		fdef.shape = shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits = B2DVars.BIT_RED | B2DVars.BIT_CRYSTAL;
+		fdef.friction=0;
 		body.createFixture(fdef).setUserData("player");
 		
 		// create foot sensor
@@ -212,6 +224,7 @@ public class Play extends GameState {
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits = B2DVars.BIT_RED;
 		fdef.isSensor = true;
+		
 		body.createFixture(fdef).setUserData("foot");
 		
 		// create player
@@ -280,10 +293,10 @@ public class Play extends GameState {
 				v[4] = new Vector2(
 						-tileSize / 2 / PPM, -tileSize / 2 / PPM);
 				cs.createChain(v);
-				fdef.friction = 0;
+				//dfdef.friction = 100;
 				fdef.shape = cs;
 				fdef.filter.categoryBits = bits;
-				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+				fdef.filter.maskBits = B2DVars.BIT_PLAYER|B2DVars.BIT_RED;
 				fdef.isSensor = false;
 				world.createBody(bdef).createFixture(fdef);
 				
@@ -295,20 +308,80 @@ public class Play extends GameState {
 	private void createCrystals() {
 		
 		crystals = new Array<Crystal>();
-		
+		objects= new Array<B2DSprite>();
 		MapLayer layer = tileMap.getLayers().get("crystals");
 		
 		BodyDef bdef = new BodyDef();
 		FixtureDef fdef = new FixtureDef();
-		
-/*		for(MapObject mo : layer.getObjects()) {
-			
-			bdef.type = BodyType.StaticBody;
-//			mo.getProperties().get
-//			float x = (float) mo.getProperties().get("x") / PPM;
-//			float y = (float) mo.getProperties().get("y") / PPM;
-			
+		//Enemies
+		layer=tileMap.getLayers().get("enemies");
+		for(MapObject o:layer.getObjects()) {
+			float x=(float)o.getProperties().get("x")/PPM;
+			float y=(float)o.getProperties().get("y")/PPM;
+			String type=(String) o.getProperties().get("type");
 			bdef.position.set(x, y);
+			
+			bdef.type = BodyType.DynamicBody;
+			bdef.fixedRotation=true;
+			bdef.position.set(
+				(x ),// + tileSize / PPM/2,
+				(y ) //+ tileSize / PPM/2
+			);
+			PolygonShape shape=new PolygonShape();
+			shape.setAsBox(15 / PPM, 15 / PPM);
+			fdef.shape = shape;
+			fdef.filter.categoryBits = B2DVars.BIT_RED;
+			fdef.filter.maskBits = B2DVars.BIT_RED | B2DVars.BIT_CRYSTAL|B2DVars.BIT_PLAYER;
+			fdef.friction=0;
+			fdef.density=10;
+			Body bod=world.createBody(bdef);
+			//bod;
+			bod.createFixture(fdef).setUserData("enemy");
+			fdef.shape = shape;
+			this.objects.add(new Enemy(bod,player));
+			
+			
+		}
+		
+		
+		//Boxes
+		layer=tileMap.getLayers().get("boxes");
+		for(MapObject o:layer.getObjects()) {
+			float x=(float)o.getProperties().get("x")/PPM;
+			float y=(float)o.getProperties().get("y")/PPM;
+			String type=(String) o.getProperties().get("type");
+			bdef.position.set(x, y);
+			
+			bdef.type = BodyType.DynamicBody;
+			bdef.fixedRotation=true;
+			bdef.position.set(
+				(x ),// + tileSize / PPM/2,
+				(y ) //+ tileSize / PPM/2
+			);
+			PolygonShape shape=new PolygonShape();
+			shape.setAsBox(15 / PPM, 15 / PPM);
+			fdef.shape = shape;
+			fdef.filter.categoryBits = B2DVars.BIT_RED;
+			fdef.filter.maskBits = B2DVars.BIT_RED | B2DVars.BIT_CRYSTAL|B2DVars.BIT_PLAYER;
+			fdef.friction=.5f;
+			fdef.density=10;
+			Body bod=world.createBody(bdef);
+			bod.createFixture(fdef);
+			fdef.shape = shape;
+			this.objects.add(new PushableObject(bod));
+			
+			
+		}
+		 layer = tileMap.getLayers().get("crystals");
+		 
+		for(MapObject mo : layer.getObjects()) {
+			
+			bdef.type = BodyType.KinematicBody;
+//			mo.getProperties().get
+			float x = (float) mo.getProperties().get("x") / PPM;
+			float y = (float) mo.getProperties().get("y") / PPM;
+			bdef.position.set(x, y);
+			
 			
 			CircleShape cshape = new CircleShape();
 			cshape.setRadius(8 / PPM);
@@ -326,8 +399,8 @@ public class Play extends GameState {
 			
 			body.setUserData(c);
 			
-		}*/
-		
+		}
+		/**/
 	}
 	
 	private void switchBlocks() {
