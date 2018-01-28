@@ -36,7 +36,7 @@ import chickenjam.main.Game;
 
 public class Play extends GameState {
 	
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	private World world;
 	private Box2DDebugRenderer b2dr;
@@ -111,26 +111,10 @@ public class Play extends GameState {
 		
 		if(MyInput.isPressed(MyInput.UP)) {
 			player.jump();
-/*			if(cl.isPlayerOnGround()) {
-				player.getBody().applyForceToCenter(player.getBody().getLinearVelocity().x, 250, true);
-			}*/
 		}
-/*MyInput.isDown(MyInput.LEFT)&&!MyInput.isDown(MyInput.RIGHT)&&cl.isPlayerOnGround()) {
-			System.out.println("here2");
-			player.getBody().setLinearVelocity(0,player.getBody().getLinearVelocity().y);
+		if(MyInput.isDown(MyInput.UP)) {
+			player.flap();
 		}
-	*/	
-		
-		
-		
-		
-				//player.getBody().applyForceToCenter(0, 250, true);
-			
-		
-	/*	// switch block color
-		if(MyInput.isPressed(MyInput.BUTTON2)) {
-			switchBlocks();
-		}*/
 		
 	}
 	
@@ -167,8 +151,8 @@ public class Play extends GameState {
 		
 		// set camera to follow player
 		cam.position.set(
-			player.getPosition().x * PPM + Game.V_WIDTH / 4,
-			Game.V_HEIGHT / 2,
+			player.getPosition().x * PPM,// + Game.V_WIDTH / 2,
+			player.getPosition().y*PPM,//a+Game.V_HEIGHT / 2,
 			0
 		);
 		cam.update();
@@ -192,6 +176,12 @@ public class Play extends GameState {
 		
 		// draw box2d
 		if(debug) {
+			b2dCam.position.set(
+					player.getPosition().x ,// + Game.V_WIDTH / 2,
+					player.getPosition().y,//a+Game.V_HEIGHT / 2,
+					0
+				);
+			b2dCam.update();
 			b2dr.render(world, b2dCam.combined);
 		}
 		
@@ -226,7 +216,7 @@ public class Play extends GameState {
 		
 		// create player
 		player = new Player(body);
-		
+
 		
 		body.setUserData(player);
 		
@@ -278,13 +268,17 @@ public class Play extends GameState {
 				);
 				
 				ChainShape cs = new ChainShape();
-				Vector2[] v = new Vector2[3];
+				Vector2[] v = new Vector2[5];
 				v[0] = new Vector2(
 					-tileSize / 2 / PPM, -tileSize / 2 / PPM);
 				v[1] = new Vector2(
 					-tileSize / 2 / PPM, tileSize / 2 / PPM);
 				v[2] = new Vector2(
 					tileSize / 2 / PPM, tileSize / 2 / PPM);
+				v[3] = new Vector2(
+						tileSize / 2 / PPM, -tileSize / 2 / PPM);
+				v[4] = new Vector2(
+						-tileSize / 2 / PPM, -tileSize / 2 / PPM);
 				cs.createChain(v);
 				fdef.friction = 0;
 				fdef.shape = cs;

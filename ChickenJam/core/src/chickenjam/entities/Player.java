@@ -2,8 +2,11 @@ package chickenjam.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Filter;
 
+import chickenjam.handlers.B2DVars;
 import chickenjam.main.Game;
 
 public class Player extends B2DSprite {
@@ -12,8 +15,9 @@ public class Player extends B2DSprite {
 	private int totalCrystals;
 	private boolean onGround=false;
 	private float maxSpeed=3;
-	private float gndForce=2;
-	private float airForce=1;
+	private float gndForce=3;
+	private float airForce=2;
+	private float fallDamping=.93f;
 	
 	public Player(Body body) {
 		
@@ -25,6 +29,51 @@ public class Player extends B2DSprite {
 		setAnimation(sprites, 1 / 12f);
 		
 	}
+	public void update(float dt) {
+		super.update(dt);
+		if(body.getLinearVelocity().y<=.01) {
+			Vector2 vel=body.getLinearVelocity();
+			vel.y*=fallDamping;
+			body.setLinearVelocity(vel);
+			Filter filter = body.getFixtureList().first()
+					.getFilterData();
+			short bits = filter.maskBits;
+			bits|=B2DVars.BIT_RED;
+			
+			filter.maskBits = bits;
+			body.getFixtureList().first().setFilterData(filter);
+			
+			// set new mask bits for foot
+			filter = body.getFixtureList().get(1).getFilterData();
+			bits &= ~B2DVars.BIT_CRYSTAL;
+			filter.maskBits = bits;
+			body.getFixtureList().get(1).setFilterData(filter);
+		}else {
+			Filter filter = body.getFixtureList().first()
+					.getFilterData();
+			short bits = filter.maskBits;
+			bits&=~B2DVars.BIT_RED;
+			
+			filter.maskBits = bits;
+			body.getFixtureList().first().setFilterData(filter);
+			
+			// set new mask bits for foot
+			filter = body.getFixtureList().get(1).getFilterData();
+			bits &= ~B2DVars.BIT_CRYSTAL;
+			filter.maskBits = bits;
+			body.getFixtureList().get(1).setFilterData(filter);
+		}
+		if(body.getLinearVelocity().equals(Vector2.Zero)) {
+			animation.update(-1);
+		}
+		
+		
+		
+
+		
+		
+		
+	}
 	
 	public void collectCrystal() { numCrystals++; }
 	public int getNumCrystals() { return numCrystals; }
@@ -32,6 +81,7 @@ public class Player extends B2DSprite {
 	public int getTotalCyrstals() { return totalCrystals; }
 
 	public void moveLeft() {
+		goingRight=false;
 		if(onGround) {
 			if(body.getLinearVelocity().x<-maxSpeed) {
 				body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
@@ -40,14 +90,20 @@ public class Player extends B2DSprite {
 			}else {
 				body.applyForceToCenter(-gndForce, 0,true);
 			}
+		}else {
+			if(body.getLinearVelocity().x<-maxSpeed) {
+				body.setLinearVelocity(-maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x>0){
+				body.applyForceToCenter(-airForce*2, 0,true);
+			}else {
+				
+				body.applyForceToCenter(-airForce, 0,true);
+			}
 		}
-		/*if(cl.isPlayerOnGround()) {
-			//player.getBody().setL
-			player.getBody().setLinearVelocity(-1,player.getBody().getLinearVelocity().y);
-		// TODO Auto-generated method stub
-		*/
 	}
 	public void moveRight() {
+		goingRight=true;
+
 		if(onGround) {
 			if(body.getLinearVelocity().x>maxSpeed) {
 				body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
@@ -56,21 +112,29 @@ public class Player extends B2DSprite {
 			}else {
 				body.applyForceToCenter(gndForce, 0,true);
 			}
+		}else {
+			if(body.getLinearVelocity().x>maxSpeed) {
+				body.setLinearVelocity(maxSpeed,body.getLinearVelocity().y);
+			}else if(body.getLinearVelocity().x<0){
+				body.applyForceToCenter(gndForce*2, 0,true);
+			}else {
+				body.applyForceToCenter(gndForce, 0,true);
+			}
 		}
 		
 	}
 	public void jump() {
 		if(onGround) {
-			body.applyForceToCenter(body.getLinearVelocity().x, 250, true);
+			body.applyForceToCenter(body.getLinearVelocity().x, 150, true);
 		}
 	}
 
 	public void stop() {
 		if(this.onGround) {
-			if(body.getLinearVelocity().x>.3) {
-				body.applyForceToCenter(-gndForce*2, 0,true);
-			}else if(body.getLinearVelocity().x<-.3) {
-				body.applyForceToCenter(gndForce*2, 0,true);
+			if(body.getLinearVelocity().x>.1) {
+				body.applyForceToCenter(-gndForce*4, 0,true);
+			}else if(body.getLinearVelocity().x<-.1) {
+				body.applyForceToCenter(gndForce*4, 0,true);
 			}else {
 				body.setLinearVelocity(0,body.getLinearVelocity().y);
 			}
@@ -82,6 +146,11 @@ public class Player extends B2DSprite {
 
 	public void onGround(boolean playerOnGround) {
 		this.onGround=playerOnGround;
+		
+	}
+
+	public void flap() {
+		body.applyForceToCenter(0, 7, true);
 		
 	}
 	
