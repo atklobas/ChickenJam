@@ -33,6 +33,7 @@ import chickenjam.entities.Enemy;
 import chickenjam.entities.HUD;
 import chickenjam.entities.Player;
 import chickenjam.entities.PushableObject;
+import chickenjam.entities.Sprite;
 import chickenjam.handlers.B2DVars;
 import chickenjam.handlers.GameStateManager;
 import chickenjam.handlers.MyContactListener;
@@ -56,6 +57,7 @@ public class Play extends GameState {
 	public Player player;
 	private Array<Crystal> crystals;
 	private Array<B2DSprite> objects;
+	public Array<Sprite>winZones;
 	
 	private HUD hud;
 	
@@ -124,6 +126,20 @@ public class Play extends GameState {
 		}
 		
 		if (MyInput.isPressed(MyInput.CROW)) {
+			for(Sprite win:this.winZones) {
+				Vector2 p=player.getPosition().scl(PPM);
+				if(p.x>win.getX()&&p.x<win.getX()+win.getWidth()){
+					if(p.y>win.getY()&&p.y<win.getY()+win.getHeight()) {
+						System.out.println("winnrar");
+					}
+					
+				
+				//System.out.println(win);
+				//System.out.println(player.getBody().getPosition().scl(PPM));
+				//if(player.getBody()win.)
+				}
+			}
+			
 			player.crow();
 		}
 		
@@ -186,6 +202,9 @@ public class Play extends GameState {
 		sb.setProjectionMatrix(cam.combined);
 		player.render(sb);
 		for(B2DSprite o:this.objects) {
+			o.render(sb);
+		}
+		for(Sprite o:this.winZones) {
 			o.render(sb);
 		}
 		// draw crystals
@@ -321,10 +340,34 @@ public class Play extends GameState {
 		
 		crystals = new Array<Crystal>();
 		objects= new Array<B2DSprite>();
+		winZones=new Array<Sprite>();
 		MapLayer layer = tileMap.getLayers().get("crystals");
 		
 		BodyDef bdef = new BodyDef();
 		FixtureDef fdef = new FixtureDef();
+		
+		
+		
+		//Boxes
+				layer=tileMap.getLayers().get("objective");
+				for(MapObject o:layer.getObjects()) {
+					float x=(float)o.getProperties().get("x");
+					float y=(float)o.getProperties().get("y");
+					float width=(float)o.getProperties().get("width");
+					float height=(float)o.getProperties().get("height");
+					
+					this.winZones.add(new Sprite(x,y,width,height));
+					
+					
+				}
+		
+		
+		
+		
+		
+		
+		
+		
 		//Enemies
 		layer=tileMap.getLayers().get("enemies");
 		for(MapObject o:layer.getObjects()) {

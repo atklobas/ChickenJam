@@ -130,8 +130,10 @@ public class Player extends Actor {
 	
 	public void crow() {
 		if(System.currentTimeMillis()-lastCrowed>2000) {		
+			
 			soundMap.get("crow").play(0.1f);
 			lastCrowed=System.currentTimeMillis();
+			
 		}
 	}
 	
