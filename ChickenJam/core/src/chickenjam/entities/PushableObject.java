@@ -11,10 +11,11 @@ public class PushableObject extends B2DSprite{
 	public PushableObject(Body body) {
 		super(body);
 		
-		Texture tex = Game.res.getTexture("crystal");
-		TextureRegion[] sprites = TextureRegion.split(tex, 16, 16)[0];
+		Texture tex = Game.res.getTexture("box");
+		TextureRegion[] sprites = TextureRegion.split(tex, 32, 31)[0];
+		this.width=300;
 		
-		setAnimation(sprites, 1 / 12f);
+		setAnimation(sprites, 1);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -31,17 +32,37 @@ public class Player extends Actor {
 	private Map<String, Sound> soundMap;
 	private long lastCrowed=0;
 	private long diedAt=0;
+	private long wonAt=0;
+	private float width,height;
 	public Player(Body body) {
-		
 		super(body);
-		
-		Texture tex = Game.res.getTexture("bunny");
-		TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+		;
+		width=32;
+		height=32;
+		Texture tex = Game.res.getTexture("rooster");
+		TextureRegion[] sprites = TextureRegion.split(tex, 209, 209)[0];
 		loadSound();
 		setAnimation(sprites, 1 / 12f);
 		setToMaxHealth();
 		
 		
+	}
+	public void render(SpriteBatch sb) {
+		//animation.getFrame().flip(body.getLinearVelocity().x<-.1,false);
+		int reverse=1;
+		if(!goingRight) {
+			reverse=-1;
+		}
+		
+		sb.begin();
+		sb.draw(
+			animation.getFrame(),
+			body.getPosition().x * B2DVars.PPM - reverse*width / 2,
+			body.getPosition().y * B2DVars.PPM - height / 2,
+			reverse*width,
+			height
+		);
+		sb.end();
 	}
 	
 	public void update(float dt) {
@@ -174,6 +195,12 @@ public class Player extends Actor {
 	public long diedAt() {
 		// TODO Auto-generated method stub
 		return diedAt;
+	}
+	public long wonAt() {
+		return this.wonAt;
+	}
+	public void win() {
+		this.wonAt=System.currentTimeMillis();
 	}
 	
 }

@@ -42,7 +42,7 @@ import chickenjam.main.Game;
 
 public class Play extends GameState {
 	
-	private boolean debug = true;
+	private boolean debug = false;
 	
 	private World world;
 	private Box2DDebugRenderer b2dr;
@@ -130,7 +130,7 @@ public class Play extends GameState {
 				Vector2 p=player.getPosition().scl(PPM);
 				if(p.x>win.getX()&&p.x<win.getX()+win.getWidth()){
 					if(p.y>win.getY()&&p.y<win.getY()+win.getHeight()) {
-						System.out.println("winnrar");
+						player.win();
 					}
 					
 				
@@ -152,10 +152,17 @@ public class Play extends GameState {
 		
 	}
 	public void update(float dt) {
+		time+=dt/15;
 		
 		// check input
 		handleInput();
-		if(!player.isDead()) {
+		if(player.wonAt()>0) {
+		if(player.wonAt()+1000<System.currentTimeMillis()) {
+			gsm.popState();
+			
+			gsm.pushState(GameStateManager.WON);
+		}
+		}if(!player.isDead()) {
 			world.step(dt, 6, 2);
 		}else {
 			if(player.diedAt()+3000<System.currentTimeMillis()) {
@@ -188,11 +195,36 @@ public class Play extends GameState {
 		}
 		
 	}
+	int [] colors= {
+			0,0,0,
+			63,27,27,
+			127,68,6,
+			228,123,9,
+			209,100,161,
+			9,207,229
+	};
 	
+	float time=0;
 	public void render() {
+		float mid=time-(int)time;
+		int selection=(int)time;
+		if(selection>4) {
+			selection=4;
+			mid=1;
+			gsm.popState();
+			gsm.pushState(GameStateManager.TIMEOUT);
+			
+		}selection*=3;
+		System.out.println(selection+","+mid);
+		float r= colors[selection]*(1-mid)+colors[selection+3]*mid;
+		
+		float g= colors[selection+1]*(1-mid)+colors[selection+1+3]*mid;
+		float b= colors[selection+2]*(1-mid)+colors[selection+2+3]*mid;
 		
 		// clear screen
+		Gdx.gl.glClearColor(r/255f, g/255f, b/255f, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		//Gdx.gl20.glClear(GL20.GL_COLO);
 		
 		// set camera to follow player
 		cam.position.set(
@@ -279,9 +311,10 @@ public class Play extends GameState {
 	private void createTiles() {
 		
 		// load tile map
-		tileMap = new TmxMapLoader().load("res/maps/test.tmx");
-		tmr = new OrthogonalTiledMapRenderer(tileMap);
-		
+		tileMap = new TmxMapLoader().load("res/maps/test03nowwithboxes.tmx");
+		//tileMap = new TmxMapLoader().load("res/maps/test.tmx");
+		tmr = new OrthogonalTiledMapRenderer(tileMap,1/4f);
+			
 		tileSize=32;
 		//tileSize = (int) tileMap.getProperties().get("tilewidth");
 		
