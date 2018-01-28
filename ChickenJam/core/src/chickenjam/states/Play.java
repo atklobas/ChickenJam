@@ -3,6 +3,7 @@ package chickenjam.states;
 import static chickenjam.handlers.B2DVars.PPM;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
@@ -58,6 +59,8 @@ public class Play extends GameState {
 	
 	private HUD hud;
 	
+	private Music music;
+	
 	public Play(GameStateManager gsm) {
 		
 		super(gsm);
@@ -84,6 +87,11 @@ public class Play extends GameState {
 		// set up hud
 		hud = new HUD(player);
 		
+		// start musics
+		music = Gdx.audio.newMusic(Gdx.files.internal("res/music/bensound-ukulele.mp3"));
+		music.setLooping(true);
+		music.setVolume(0.1f);
+		music.play();
 	}
 	
 	public void handleInput() {
@@ -113,6 +121,10 @@ public class Play extends GameState {
 			}*/
 		}else {
 			player.stop();
+		}
+		
+		if (MyInput.isPressed(MyInput.CROW)) {
+			player.crow();
 		}
 		
 		if(MyInput.isPressed(MyInput.UP)) {
@@ -161,7 +173,7 @@ public class Play extends GameState {
 		// set camera to follow player
 		cam.position.set(
 			player.getPosition().x * PPM,// + Game.V_WIDTH / 2,
-			player.getPosition().y*PPM,//a+Game.V_HEIGHT / 2,
+			player.getPosition().y * PPM,//a+Game.V_HEIGHT / 2,
 			0
 		);
 		cam.update();
