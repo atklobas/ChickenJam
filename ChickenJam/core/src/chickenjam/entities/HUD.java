@@ -27,21 +27,34 @@ public class HUD {
 	}
 	
 	public void render(SpriteBatch sb) {
-		
-		short bits = player.getBody().getFixtureList().first()
-						.getFilterData().maskBits;
-		
+
 		sb.begin();
-		if((bits & B2DVars.BIT_RED) != 0) {
-			sb.draw(blocks[0], 40, 200);
+		for (short i = 0; i < player.getHealth() ; i += 2) {
+			sb.draw(blocks[0], 20 + (i / 2 * 20), 200);
 		}
-		if((bits & B2DVars.BIT_GREEN) != 0) {
-			sb.draw(blocks[1], 40, 200);
+		if (player.getHealth() % 2 == 1) {
+			sb.draw(blocks[1], 20 + (player.getHealth() / 2 * 20), 200);
 		}
-		if((bits & B2DVars.BIT_BLUE) != 0) {
-			sb.draw(blocks[2], 40, 200);
+		for (short i = player.getHealth(); (i+1) < player.getMaxHealth(); i += 2) {
+			sb.draw(blocks[2], 20 + ((i+1) / 2 * 20), 200);
 		}
 		sb.end();
+
+		
+//		short bits = player.getBody().getFixtureList().first()
+//						.getFilterData().maskBits;
+//		
+//		sb.begin();
+//		if((bits & B2DVars.BIT_RED) != 0) {
+//			sb.draw(blocks[0], 40, 200);
+//		}
+//		if((bits & B2DVars.BIT_GREEN) != 0) {
+//			sb.draw(blocks[1], 40, 200);
+//		}
+//		if((bits & B2DVars.BIT_BLUE) != 0) {
+//			sb.draw(blocks[2], 40, 200);
+//		}
+//		sb.end();
 		
 	}
 	

@@ -148,7 +148,7 @@ public class Play extends GameState {
 			Body b = bodies.get(i);
 			crystals.removeValue((Crystal) b.getUserData(), true);
 			world.destroyBody(b);
-			player.collectCrystal();
+			player.gainHealth();
 		}
 		bodies.clear();
 		

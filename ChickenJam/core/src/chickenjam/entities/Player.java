@@ -8,8 +8,9 @@ import chickenjam.main.Game;
 
 public class Player extends B2DSprite {
 	
-	private int numCrystals;
-	private int totalCrystals;
+	private final short MAX_HEALTH = 6;
+	private short currentHealth;
+//	private short maxHealth;
 	private boolean onGround=false;
 	private float maxSpeed=3;
 	private float gndForce=2;
@@ -23,13 +24,15 @@ public class Player extends B2DSprite {
 		TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 		
 		setAnimation(sprites, 1 / 12f);
+		setToMaxHealth();
 		
 	}
 	
-	public void collectCrystal() { numCrystals++; }
-	public int getNumCrystals() { return numCrystals; }
-	public void setTotalCrystals(int i) { totalCrystals = i; }
-	public int getTotalCyrstals() { return totalCrystals; }
+	public void loseHealth() { currentHealth--; }
+	public void gainHealth() { currentHealth++; }
+	public short getHealth() { return currentHealth; }
+	public void setToMaxHealth() { currentHealth = 6; }
+	public short getMaxHealth() { return MAX_HEALTH; }
 
 	public void moveLeft() {
 		if(onGround) {
